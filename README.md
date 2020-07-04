@@ -1,0 +1,1 @@
+# Backend for SCTI 2020 web application (Work in Progress 🚧)

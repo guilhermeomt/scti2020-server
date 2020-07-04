@@ -1,0 +1,23 @@
+{
+  "name": "scti2020-server",
+  "version": "1.0.0",
+  "description": "Backend for SCTI 2020 web application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guilhermeomt/scti2020-server.git"
+  },
+  "keywords": [],
+  "author": "Guilherme Tavares",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/guilhermeomt/scti2020-server/issues"
+  },
+  "homepage": "https://github.com/guilhermeomt/scti2020-server#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
