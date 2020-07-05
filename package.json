@@ -2,7 +2,7 @@
   "name": "scti2020-server",
   "version": "1.0.0",
   "description": "Backend for SCTI 2020 web application",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "dev": "nodemon src/server.js"
   },
@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/guilhermeomt/scti2020-server#readme",
   "dependencies": {
+    "dotenv": "^8.2.0",
     "express": "^4.17.1"
   },
   "devDependencies": {
