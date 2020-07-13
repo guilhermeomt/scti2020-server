@@ -1,16 +1,21 @@
 const mongoose = require('mongoose');
 
-module.exports = async (dbString, env) => {
-  if (env === 'development') {
-    try {
-      await mongoose.connect(dbString, {
+module.exports = (dbString) => {
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Attempting to connect to database...');
+    mongoose
+      .connect(dbString, {
         useNewUrlParser: true,
         useCreateIndex: true,
         useFindAndModify: false,
         useUnifiedTopology: true,
+      })
+      .then(() => {
+        console.log('Estabilished MongoDB connection successfully!');
       });
-    } catch (err) {
-      console.log(err); // TODO: better error handling
-    }
   }
+
+  mongoose.connection.on('disconnected', () => {
+    console.log('Warning: Database connection lost');
+  });
 };
