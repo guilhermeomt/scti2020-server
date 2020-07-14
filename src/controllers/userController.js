@@ -1,8 +1,15 @@
 const User = require('../models/user');
 const catchAsync = require('../utils/catchAsync');
+const APIQueryFeatures = require('../utils/apiQueryFeatures');
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
+  const features = new APIQueryFeatures(User.find(), req.query)
+    .filter()
+    .sort('firstName lastName')
+    .fields()
+    .paginate();
+
+  const users = await features.query;
 
   res.status(200).json({
     status: 'success',
