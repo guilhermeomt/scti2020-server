@@ -12,6 +12,7 @@
   "rules": {
     "prettier/prettier": "error",
     "no-console": "warn",
+    "func-names": "off",
     "no-unused-vars": [
       "warn",
       {

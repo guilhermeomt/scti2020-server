@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 const { isEmail } = require('validator').default;
 
 const userSchema = new mongoose.Schema(
@@ -27,11 +28,9 @@ const userSchema = new mongoose.Schema(
           message: 'O email inserido é inválido.',
         },
         {
-          validator(val) {
-            return mongoose
-              .model('User')
-              .findOne({ email: val })
-              .then((user) => !user);
+          async validator(val) {
+            const user = await mongoose.model('User').findOne({ email: val });
+            return !user;
           },
           message: 'Este email já está cadastrado. Tente outro.',
         },
@@ -51,6 +50,16 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true, discriminatorKey: 'role' }
 );
+
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+    next();
+  }
+
+  this.password = await bcrypt.hash(this.password, 12);
+
+  next();
+});
 
 class User {
   get fullName() {
