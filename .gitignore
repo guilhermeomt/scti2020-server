@@ -105,3 +105,6 @@ dist
 
 # VSCode configuration
 .vscode/
+
+#dotenv development configuration private file
+config.private_dev.env 

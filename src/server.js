@@ -3,7 +3,7 @@ const { resolve } = require('path');
 const createDbConnection = require('./database/connection');
 
 dotenv.config({
-  path: resolve(__dirname, '..', 'config.dev.env'),
+  path: resolve(__dirname, '..', 'config.private_dev.env'),
 });
 const { PORT, MONGO_URI } = process.env;
 
