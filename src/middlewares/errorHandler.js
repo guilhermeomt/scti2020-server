@@ -30,6 +30,22 @@ const handleCastError = (err) => {
   return error;
 };
 
+const handleJWTError = () => {
+  const error = new ErrorResponse(
+    'O seu token não é válido. Faça o login novamente.',
+    401
+  );
+  return error;
+};
+
+const handleTokenExpiredError = () => {
+  const error = new ErrorResponse(
+    'O seu token expirou. Por favor, faça o login novamente.',
+    401
+  );
+  return error;
+};
+
 module.exports = (err, req, res, next) => {
   if (!err.isOperational) {
     switch (err.name) {
@@ -38,6 +54,15 @@ module.exports = (err, req, res, next) => {
 
       case 'CastError':
         return sendErrorResponse(res, handleCastError(err));
+
+      case 'SyntaxError':
+        return sendErrorResponse(res, err);
+
+      case 'JsonWebTokenError':
+        return sendErrorResponse(res, handleJWTError());
+
+      case 'TokenExpiredError':
+        return sendErrorResponse(res, handleTokenExpiredError());
 
       default:
     }

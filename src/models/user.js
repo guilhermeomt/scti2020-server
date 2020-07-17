@@ -46,7 +46,9 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
       select: false,
+      immutable: true,
     },
+    passwordChangedAt: Date,
   },
   { timestamps: true, discriminatorKey: 'role' }
 );
@@ -68,6 +70,18 @@ class User {
 
   async isCorrectPassword(receivedPassword, userPassword) {
     return bcrypt.compare(receivedPassword, userPassword);
+  }
+
+  changedPasswordAfter(JWTTimestamp) {
+    if (this.passwordChangedAt) {
+      const changedTimestamp = parseInt(
+        this.passwordChangedAt.getTime() / 1000,
+        10
+      );
+      return JWTTimestamp < changedTimestamp;
+    }
+
+    return false;
   }
 }
 
