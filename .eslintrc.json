@@ -13,6 +13,8 @@
     "prettier/prettier": "error",
     "no-console": "warn",
     "func-names": "off",
+    "class-methods-use-this": "off",
+    "no-underscore-dangle": "off",
     "no-unused-vars": [
       "warn",
       {

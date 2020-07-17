@@ -65,6 +65,10 @@ class User {
   get fullName() {
     return `${this.firstName} ${this.lastName}`;
   }
+
+  async isCorrectPassword(receivedPassword, userPassword) {
+    return bcrypt.compare(receivedPassword, userPassword);
+  }
 }
 
 userSchema.loadClass(User);
