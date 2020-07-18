@@ -32,7 +32,10 @@ exports.isAuthenticated = catchAsync(async (req, res, next) => {
   const currentUser = await User.findById(decodedToken.id).select('+isAdmin');
   if (!currentUser) {
     return next(
-      new ErrorResponse('O usuário possuia este token não existe mais.', 401)
+      new ErrorResponse(
+        'O usuário que possuia este token não existe mais.',
+        401
+      )
     );
   }
 
@@ -53,7 +56,7 @@ exports.isAuthorized = (req, res, next) => {
   if (!req.user || !req.user.isAdmin) {
     return next(
       new ErrorResponse(
-        'Você não possui permissão para realizar esta ação',
+        'Você não possui permissão para realizar esta ação.',
         403
       )
     );

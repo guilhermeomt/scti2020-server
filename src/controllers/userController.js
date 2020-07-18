@@ -1,6 +1,44 @@
 const User = require('../models/user');
 const catchAsync = require('../utils/catchAsync');
 const APIQueryFeatures = require('../utils/apiQueryFeatures');
+const ErrorResponse = require('../utils/errorResponse');
+
+const filterBodyFields = (body, ...allowedFields) => {
+  const filteredBody = {};
+
+  Object.keys(body).forEach((el) => {
+    if (allowedFields.includes(el)) {
+      filteredBody[el] = body[el];
+    }
+  });
+  return filteredBody;
+};
+
+exports.updateData = catchAsync(async (req, res, next) => {
+  if (req.body.password) {
+    return next(
+      new ErrorResponse('Não se pode mudar a senha nesta rota!', 400)
+    );
+  }
+
+  const filteredBody = filterBodyFields(
+    req.body,
+    'firstName',
+    'lastName',
+    'email',
+    'phone'
+  );
+
+  const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
+    new: true,
+    runValidators: true,
+  });
+
+  return res.status(200).json({
+    status: 'success',
+    data: updatedUser,
+  });
+});
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
   const features = new APIQueryFeatures(User.find(), req.query)
@@ -55,10 +93,10 @@ exports.updateUser = catchAsync(async (req, res, next) => {
 exports.deleteUser = catchAsync(async (req, res) => {
   const { id } = req.params;
 
-  const deletedUser = await User.findByIdAndDelete(id);
+  await User.findByIdAndDelete(id);
 
-  res.status(200).json({
+  res.status(204).json({
     status: 'success',
-    data: deletedUser,
+    data: null,
   });
 });

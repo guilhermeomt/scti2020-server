@@ -23,7 +23,7 @@ exports.signUp = catchAsync(async (req, res, next) => {
     password,
   });
 
-  res.status(200).json({
+  res.status(201).json({
     status: 'success',
     data: newUser,
   });
@@ -58,7 +58,10 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ email });
   if (!user) {
     return next(
-      new ErrorResponse('Não existe um usuário com este endereço de email', 404)
+      new ErrorResponse(
+        'Não existe um usuário com este endereço de email.',
+        404
+      )
     );
   }
 
@@ -99,7 +102,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 exports.resetPassword = catchAsync(async (req, res, next) => {
   const { token } = req.params;
   if (token.length !== 64) {
-    return next(new ErrorResponse('Token inválido ou foi expirado', 400));
+    return next(new ErrorResponse('Token inválido ou foi expirado.', 400));
   }
 
   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
@@ -123,5 +126,25 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   return res.status(200).json({
     status: 'success',
     token: jwtToken,
+  });
+});
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user.id).select('+password');
+
+  if (
+    !(await user.isCorrectPassword(req.body.currentPassword, user.password))
+  ) {
+    return next(new ErrorResponse('Senha incorreta.', 401));
+  }
+
+  user.password = req.body.newPassword;
+  await user.save();
+
+  const token = await signToken(user._id);
+
+  return res.status(200).json({
+    status: 'success',
+    token,
   });
 });
