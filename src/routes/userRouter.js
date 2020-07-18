@@ -2,11 +2,12 @@ const express = require('express');
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
 const { isAuthenticated, isAuthorized } = require('../middlewares/auth');
+const authLimiter = require('../utils/authRateLimiter');
 
 const router = express.Router();
 
-router.post('/signup', authController.signUp);
-router.post('/login', authController.login);
+router.post('/signup', authLimiter, authController.signUp);
+router.post('/login', authLimiter, authController.login);
 
 router.post('/forgotPassword', authController.forgotPassword);
 router.patch('/resetPassword/:token', authController.resetPassword);
