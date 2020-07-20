@@ -12,6 +12,27 @@ const signToken = async (id) => {
   });
 };
 
+const createAndSendToken = async (userId, statusCode, res) => {
+  const token = await signToken(userId);
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + +process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === 'production') {
+    cookieOptions.secure = true;
+  }
+
+  res.cookie('jwt', token, cookieOptions);
+
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+  });
+};
+
 exports.signUp = catchAsync(async (req, res, next) => {
   const { firstName, lastName, phone, email, password } = req.body;
 
@@ -22,6 +43,9 @@ exports.signUp = catchAsync(async (req, res, next) => {
     email,
     password,
   });
+
+  // Removes password from output
+  newUser.password = undefined;
 
   res.status(201).json({
     status: 'success',
@@ -44,12 +68,7 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new ErrorResponse('Email ou senha incorretos.', 401));
   }
 
-  const token = await signToken(user._id);
-
-  return res.status(200).json({
-    status: 'success',
-    token,
-  });
+  return createAndSendToken(user._id, 200, res);
 });
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
@@ -121,12 +140,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   user.passwordResetExpiresIn = undefined;
   await user.save();
 
-  const jwtToken = await signToken(user._id);
-
-  return res.status(200).json({
-    status: 'success',
-    token: jwtToken,
-  });
+  return createAndSendToken(user._id, 200, res);
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
@@ -141,10 +155,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   user.password = req.body.newPassword;
   await user.save();
 
-  const token = await signToken(user._id);
-
-  return res.status(200).json({
-    status: 'success',
-    token,
-  });
+  return createAndSendToken(user._id, 200, res);
 });
