@@ -1,21 +1,28 @@
 const mongoose = require('mongoose');
+const logger = require('../utils/logger');
 
-module.exports = (dbString) => {
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Attempting to connect to database...');
-    mongoose
-      .connect(dbString, {
-        useNewUrlParser: true,
-        useCreateIndex: true,
-        useFindAndModify: false,
-        useUnifiedTopology: true,
-      })
-      .then(() => {
-        console.log('Estabilished MongoDB connection successfully!');
-      });
-  }
-
-  mongoose.connection.on('disconnected', () => {
-    console.log('Warning: Database connection lost');
+module.exports = async (dbString) => {
+  // Listeners for db connection logging
+  mongoose.connection.on('connecting', () => {
+    logger.info(`Attempting to connect to database...`, { label: 'db' });
   });
+
+  mongoose.connection.on('connected', () => {
+    logger.info(`Estabilished database connection successfully!`, {
+      label: 'db',
+    });
+  });
+  mongoose.connection.on('disconnected', () => {
+    logger.warn('Connection to database lost', { label: 'db' });
+  });
+
+  // Connection process
+  if (process.env.NODE_ENV === 'development') {
+    await mongoose.connect(dbString, {
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useFindAndModify: false,
+      useUnifiedTopology: true,
+    });
+  }
 };

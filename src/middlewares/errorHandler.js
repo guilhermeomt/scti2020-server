@@ -1,4 +1,5 @@
 const ErrorResponse = require('../utils/errorResponse');
+const logger = require('../utils/logger');
 
 const sendErrorResponse = (res, err) => {
   return res.status(err.statusCode).json({
@@ -67,6 +68,7 @@ module.exports = (err, req, res, next) => {
       default:
     }
 
+    logger.error(`Unhandled Error at Response: ${err}`, { label: 'http' });
     const error = new ErrorResponse();
     return sendErrorResponse(res, error);
   }
