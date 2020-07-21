@@ -50,21 +50,21 @@ const userSchema = new mongoose.Schema(
 
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
-    next();
+    return next();
   }
 
   this.password = await bcrypt.hash(this.password, 12);
 
-  next();
+  return next();
 });
 
 userSchema.pre('save', function (next) {
   if (!this.isModified('password') || this.isNew) {
-    next();
+    return next();
   }
 
   this.passwordChangedAt = Date.now() - 1000;
-  next();
+  return next();
 });
 
 class User {
@@ -109,3 +109,5 @@ userSchema.loadClass(User);
 const userModel = mongoose.model('User', userSchema);
 
 module.exports = userModel;
+// Require Speaker so User can know that Speaker is a discriminator
+require('./speaker');
