@@ -12,22 +12,25 @@ router.post('/login', authLimiter, authController.login);
 router.post('/forgotPassword', authController.forgotPassword);
 router.patch('/resetPassword/:token', authController.resetPassword);
 
+router.use(isAuthenticated);
+
+router.get('/getOwnData', userController.getData, userController.getUser);
+router.patch('/updateOwnPassword', authController.updatePassword);
 router.patch(
-  '/updateOwnPassword',
-  isAuthenticated,
-  authController.updatePassword
+  '/updateOwnData',
+  userController.getUserRole,
+  userController.updateData
 );
-router.patch('/updateOwnData', isAuthenticated, userController.updateData);
+
+router.use(isAuthorized);
 
 router
   .route('/')
-  .all(isAuthenticated, isAuthorized)
   .get(userController.getAllUsers)
   .post(userController.createUser);
 
 router
   .route('/:id')
-  .all(isAuthenticated, isAuthorized)
   .get(userController.getUser)
   .patch(userController.updateUser)
   .delete(userController.deleteUser);
