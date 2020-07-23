@@ -2,7 +2,7 @@ const catchAsync = require('./catchAsync');
 const ErrorResponse = require('./errorResponse');
 const APIQueryFeatures = require('./apiQueryFeatures');
 
-exports.getAll = (Model, queryOptions = {}) =>
+exports.getAll = (Model, queryOptions = {}, popOptions = null) =>
   catchAsync(async (req, res, next) => {
     const features = new APIQueryFeatures(Model.find(), req.query)
       .filter()
@@ -10,20 +10,30 @@ exports.getAll = (Model, queryOptions = {}) =>
       .fields(queryOptions.notAllowedFields)
       .paginate();
 
-    const doc = await features.query;
+    if (popOptions) {
+      features.query = features.query.populate(popOptions);
+    }
+
+    const docs = await features.query;
 
     res.status(200).json({
       status: 'success',
-      results: doc.length,
-      data: doc,
+      results: docs.length,
+      data: docs,
     });
   });
 
-exports.getOne = (Model) =>
+exports.getOne = (Model, popOptions = null) =>
   catchAsync(async (req, res, next) => {
     const { id } = req.params;
 
-    const doc = await Model.findById(id);
+    let query = Model.findById(id);
+
+    if (popOptions) {
+      query = query.populate(popOptions);
+    }
+
+    const doc = await query;
 
     if (!doc) {
       return next(
