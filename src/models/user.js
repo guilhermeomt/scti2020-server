@@ -45,7 +45,17 @@ const userSchema = new mongoose.Schema(
       immutable: true,
     },
   },
-  { timestamps: true, discriminatorKey: 'role' }
+  {
+    timestamps: true,
+    discriminatorKey: 'role',
+    toObject: {
+      virtuals: true,
+    },
+    toJSON: {
+      virtuals: true,
+    },
+    id: false,
+  }
 );
 
 userSchema.pre('save', async function (next) {

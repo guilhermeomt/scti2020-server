@@ -18,8 +18,7 @@ const filterBodyFields = (body, ...notAllowedFields) => {
 };
 
 exports.getData = (req, res, next) => {
-  req.params.id = req.user.id;
-
+  req.params.id = req.user._id;
   next();
 };
 
@@ -51,10 +50,14 @@ exports.updateData = catchAsync(async (req, res, next) => {
     Model = User;
   }
 
-  const updatedUser = await Model.findByIdAndUpdate(req.user.id, filteredBody, {
-    new: true,
-    runValidators: true,
-  });
+  const updatedUser = await Model.findByIdAndUpdate(
+    req.user._id,
+    filteredBody,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
 
   return res.status(200).json({
     status: 'success',
@@ -82,8 +85,7 @@ exports.updateUser = catchAsync(async (req, res, next) => {
     );
   }
 
-  const Model = user === 'Speaker' ? Speaker : User;
-
+  const Model = user.role === 'Speaker' ? Speaker : User;
   /* Need to use the right Model (User or Speaker) to update the document 
     (that's why I queried again and didn't updated from the document directly) */
   const updatedUser = await Model.findByIdAndUpdate(user._id, req.body, {
