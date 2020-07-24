@@ -69,10 +69,15 @@ const queryOptions = {
   defaultSort: 'firstName lastName',
   notAllowedFields: ['password', 'isAdmin'],
 };
+const popOptions = {
+  path: 'enrolledAt',
+  select: '-speaker -createdAt -updatedAt -description -__v',
+};
 exports.getAllUsers = factory.getAll(User, queryOptions);
 exports.createUser = factory.createOne(User);
-exports.getUser = factory.getOne(User);
+exports.getUser = factory.getOne(User, popOptions);
 
+// TODO: Considering to improve following handler (maybe put Speaker in a separate controller)
 // Couldn't assign it to factory.updateOne(User) because it wouldn't update Speaker fields
 exports.updateUser = catchAsync(async (req, res, next) => {
   const { id } = req.params;

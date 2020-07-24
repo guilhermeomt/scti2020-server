@@ -11,7 +11,7 @@ const speakerSchema = new Schema({
     type: String,
   },
   social: socialSchema,
-  description: {
+  bio: {
     type: String,
     required: true,
   },

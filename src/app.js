@@ -5,6 +5,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const userRouter = require('./routes/userRouter');
+const eventRouter = require('./routes/eventRouter');
 const logger = require('./utils/logger');
 const notFoundRoute = require('./routes/notFoundRoute');
 const errorHandler = require('./middlewares/errorHandler');
@@ -35,6 +36,7 @@ app.use(
 
 // Routes
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/events', eventRouter);
 
 app.all('*', notFoundRoute);
 

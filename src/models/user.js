@@ -58,6 +58,12 @@ const userSchema = new mongoose.Schema(
   }
 );
 
+userSchema.virtual('enrolledAt', {
+  ref: 'Event',
+  localField: '_id',
+  foreignField: 'enrollments',
+});
+
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     return next();
