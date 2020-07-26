@@ -15,6 +15,7 @@
     "func-names": "off",
     "class-methods-use-this": "off",
     "no-underscore-dangle": "off",
+    "no-param-reassign": "off",
     "no-unused-vars": [
       "warn",
       {

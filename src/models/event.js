@@ -43,15 +43,6 @@ const eventSchema = new mongoose.Schema(
   }
 );
 
-eventSchema.pre(/^find/, function (next) {
-  this.populate({
-    path: 'speaker',
-    select: '-__v -role -phone -email -createdAt -updatedAt',
-  });
-
-  next();
-});
-
 class Event {
   get endDate() {
     if (this.hoursDuration) {
@@ -61,6 +52,31 @@ class Event {
     }
 
     return null;
+  }
+
+  isFull() {
+    return this.enrollments.length === 30;
+  }
+
+  isEnrolled(userId) {
+    return this.enrollments.includes(userId);
+  }
+
+  async enroll(userId) {
+    this.enrollments.addToSet(userId);
+    await this.save();
+
+    return this;
+  }
+
+  async disenroll(userId) {
+    const index = this.enrollments.findIndex((el) => el.toString() === userId);
+    if (index > -1) {
+      this.enrollments.splice(index, 1);
+    }
+    await this.save();
+
+    return this;
   }
 }
 

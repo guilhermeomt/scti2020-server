@@ -4,7 +4,14 @@ const { isAuthenticated, isAuthorized } = require('../middlewares/auth');
 
 const router = Router();
 
-router.use(isAuthenticated, isAuthorized);
+router.get('/info', eventController.getEventsInfo);
+
+router.use(isAuthenticated);
+
+router.patch('/enroll/:id', eventController.enroll);
+router.patch('/disenroll/:id', eventController.disenroll);
+
+router.use(isAuthorized);
 
 router
   .route('/')
