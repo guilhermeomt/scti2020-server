@@ -2,9 +2,11 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { promisify } = require('util');
 const User = require('../models/user');
+const Invite = require('../models/invite');
 const sendEmail = require('../utils/mailer');
 const catchAsync = require('../utils/catchAsync');
 const ErrorResponse = require('../utils/errorResponse');
+const filterBodyFields = require('../utils/filterBodyFields');
 
 const signToken = async (id) => {
   return promisify(jwt.sign)({ id }, process.env.JWT_SECRET, {
@@ -48,6 +50,41 @@ exports.signUp = catchAsync(async (req, res, next) => {
   newUser.password = undefined;
 
   res.status(201).json({
+    status: 'success',
+    data: newUser,
+  });
+});
+
+exports.signUpByInvite = catchAsync(async (req, res, next) => {
+  const { token } = req.params;
+
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+  const invite = await Invite.findOne({ token: hashedToken, isExpired: false });
+
+  if (!invite) {
+    return next(new ErrorResponse('Token inválido ou foi expirado!', 400));
+  }
+
+  const Model =
+    invite.targetRole === 'User' ? User : User.discriminators.Speaker;
+
+  const filteredBody = filterBodyFields(
+    req.body,
+    'passwordChangedAt',
+    'passwordResetToken',
+    'passwordResetExpiresIn',
+    'isAdmin'
+  );
+
+  const newUser = await Model.create(filteredBody).then((doc) => {
+    invite.expire().then(() => {
+      invite.addInvitedUser(doc._id);
+    });
+    return doc;
+  });
+
+  return res.status(201).json({
     status: 'success',
     data: newUser,
   });

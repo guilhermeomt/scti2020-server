@@ -2,20 +2,10 @@ const User = require('../models/user');
 const factory = require('../utils/handlerFactory');
 const catchAsync = require('../utils/catchAsync');
 const ErrorResponse = require('../utils/errorResponse');
+const filterBodyFields = require('../utils/filterBodyFields');
 
 // Retrieves Speaker model from User
 const { Speaker } = User.discriminators;
-
-const filterBodyFields = (body, ...notAllowedFields) => {
-  const filteredBody = {};
-
-  Object.keys(body).forEach((el) => {
-    if (!notAllowedFields.includes(el)) {
-      filteredBody[el] = body[el];
-    }
-  });
-  return filteredBody;
-};
 
 exports.getData = (req, res, next) => {
   req.params.id = req.user._id;

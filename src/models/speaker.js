@@ -13,7 +13,7 @@ const speakerSchema = new Schema({
   social: socialSchema,
   bio: {
     type: String,
-    required: true,
+    required: [true, 'Informe sua biografia.'],
   },
 });
 
