@@ -10,6 +10,7 @@ const socialSchema = new Schema(
     twitter: String,
     medium: String,
     youtube: String,
+    behance: String,
   },
   { _id: false }
 );

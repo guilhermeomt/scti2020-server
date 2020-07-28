@@ -4,7 +4,9 @@
   "description": "Backend for SCTI 2020 web application",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "db:seed": "node src/database/seeder.js --seed",
+    "db:delete": "node src/database/seeder.js --delete"
   },
   "repository": {
     "type": "git",
@@ -27,7 +29,7 @@
     "hpp": "^0.2.3",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.22",
-    "mongoose-beautiful-unique-validation": "^7.1.1",
+    "mongoose-unique-validator": "^2.0.3",
     "morgan": "^1.10.0",
     "nodemailer": "^6.4.10",
     "validator": "^13.1.1",

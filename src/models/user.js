@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const { isEmail } = require('validator').default;
-const beautifyUnique = require('mongoose-beautiful-unique-validation');
+const uniqueValidator = require('mongoose-unique-validator');
 
 const userSchema = new mongoose.Schema(
   {
@@ -21,7 +21,10 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: [true, 'Informe o seu email.'],
-      unique: 'Este email já está cadastrado. Tente outro.',
+      index: {
+        sparse: true,
+        unique: true,
+      },
       validate: {
         validator(val) {
           return isEmail(val);
@@ -65,7 +68,7 @@ userSchema.virtual('enrolledAt', {
 });
 
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
+  if (!this.password || !this.isModified('password')) {
     return next();
   }
 
@@ -119,7 +122,10 @@ class User {
 }
 
 // Plugin that turns unique property on schema fields a validation error
-userSchema.plugin(beautifyUnique);
+userSchema.plugin(uniqueValidator, {
+  message:
+    'Este email já está cadastrado. Tente outro ou entre em contato com os administradores.',
+});
 userSchema.loadClass(User);
 
 const userModel = mongoose.model('User', userSchema);

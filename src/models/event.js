@@ -1,17 +1,17 @@
 const mongoose = require('mongoose');
-const beautifyUnique = require('mongoose-beautiful-unique-validation');
+const uniqueValidator = require('mongoose-unique-validator');
 
 const eventSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: [true, 'O nome do evento é obrigatório.'],
-      unique: 'Já existe um evento com este nome.',
+      unique: true,
     },
     type: {
       type: String,
       required: [true, 'O tipo do evento é obrigatório.'],
-      enum: ['Minicurso', 'Palestra'],
+      enum: ['Minicurso', 'Palestra', 'Especial'],
     },
     description: {
       type: String,
@@ -80,7 +80,9 @@ class Event {
   }
 }
 
-eventSchema.plugin(beautifyUnique);
+eventSchema.plugin(uniqueValidator, {
+  message: 'Já existe um evento com este nome.',
+});
 eventSchema.loadClass(Event);
 
 const eventModel = mongoose.model('Event', eventSchema);

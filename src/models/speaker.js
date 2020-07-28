@@ -3,6 +3,13 @@ const User = require('./user');
 const socialSchema = require('./schemas/social');
 
 const speakerSchema = new Schema({
+  email: {
+    required: false,
+  },
+  password: {
+    type: String,
+    required: false,
+  },
   phone: {
     type: String,
     required: false,

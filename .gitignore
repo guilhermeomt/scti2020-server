@@ -106,5 +106,8 @@ dist
 # VSCode configuration
 .vscode/
 
-#dotenv development configuration private file
+# Dotenv private development configuration file
 config.private_dev.env 
+
+# Seed data directory
+data/
